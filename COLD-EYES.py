@@ -1,5 +1,6 @@
 import time
 
+# Function to display ASCII art
 def display_ascii_art():
     print("""
  ▄████▄   ▒█████   ██▓    ▓█████▄    ▓█████▓██   ██▓▓█████   ██████ 
@@ -14,7 +15,87 @@ def display_ascii_art():
 ░                          ░                ░ ░                     
 """)
 
-def adventure_game():
+# Function to display the player's inventory
+def display_inventory(inventory):
+    if inventory:
+        print("Inventory:", ", ".join(inventory))
+    else:
+        print("Your inventory is empty.")
+
+# Function to handle player commands
+def handle_command(command, inventory, current_location):
+    command = command.lower().strip()
+    parts = command.split()
+    action = parts[0] if parts else ""
+    target = " ".join(parts[1:]) if len(parts) > 1 else ""
+
+    if action == "take":
+        if current_location == "car" and target in ["compass", "flashlight", "granola bar"]:
+            if target not in inventory:
+                inventory.append(target)
+                print(f"You take the {target}.")
+            else:
+                print(f"You already have the {target}.")
+        elif current_location == "highway" and target == "key":
+            if target not in inventory:
+                inventory.append(target)
+                print("You find a small key buried in the snow. It might unlock something.")
+            else:
+                print("You already have the key.")
+        else:
+            print(f"There is no {target} here.")
+
+    elif action == "go":
+        if target in ["north", "south", "east", "west"]:
+            if current_location == "car" and target == "north":
+                print("You head north along the highway.")
+                return "highway"
+            elif current_location == "highway" and target == "south":
+                print("You return to the crashed car.")
+                return "car"
+            else:
+                print(f"You can't go {target} from here.")
+        else:
+            print("Invalid direction. Try 'go north', 'go south', etc.")
+
+    elif action == "look":
+        if current_location == "car" and target == "car":
+            print("The car is badly damaged. You see a compass, flashlight, and granola bar inside.")
+        elif current_location == "highway" and target == "snow":
+            print("You notice something glinting in the snow.")
+        else:
+            print(f"There is nothing to look about {target} here.")
+
+    elif action == "use":
+        if target == "key" and "key" in inventory:
+            print("You use the key to try to start the car. It sputters to life!")
+            print("You drive away from the crash site and survive the cold.")
+            print("\033[92mCongratulations! You've escaped the wilderness.\033[39m")
+            return "end"
+        else:
+            print(f"You can't use {target} here.")
+
+    elif action == "inventory":
+        display_inventory(inventory)
+
+    elif action == "quit":
+        print("\nYou decide to give up. The cold consumes you.")
+        print("\033[91mGame Over.\033[39m")
+        return "end"
+
+    else:
+        print("Invalid command. Try 'take [item]', 'go [direction]', 'look [object]', etc.")
+
+    return current_location
+
+# Main game function
+def cold_eyes_game():
+    # Initialize player inventory and game state
+    inventory = []
+    current_location = "car"
+    game_over = False
+
+    # Introduction
     print("\033[96mHot breath sickens the noxious air within the metal van,")
     time.sleep(3)
     print("Chattering tones radiate, echoing through my ears.")
@@ -41,88 +122,26 @@ def adventure_game():
     time.sleep(3)
     print("...Watching me.")
     time.sleep(3)
+    
+    print("\033[34\nmWelcome to Cold Eyes.")
+    time.sleep(2)
+    print("You wake up in a crashed car beside a snowy highway.")
+    time.sleep(2)
+    print("The air is freezing, and the world is eerily silent.")
+    time.sleep(2)
+    print("You must make careful choices to survive the cold and uncover the truth.\033[39m")
+    time.sleep(2)
 
-    print("\033[0;37m\nYou wake up in a crashed car beside a snowy highway htting a lonesome tree")
-    time.sleep(5)
-    print("You don't know why but things looks mising and shattered glass scattered around. What do you do?")
-    time.sleep(5)
-    print("1. Search the car")
-    print("2. Exit the car and look around")
-    print("3. Stay in the car to think.")
+    # Main game loop
+    while not game_over:
+        print(f"\nYou are at the {current_location}. What do you do?")
+        command = input("> ")
+        new_location = handle_command(command, inventory, current_location)
 
-    choice1 = input("> ")
-    if choice1 == "1":
-        print("You find a compass, spare clothes, and a flashlight inside a torn backpack")
-        time.sleep(4)
-        print("The compass points north. Do you take them?")
-        print("1. Yes")
-        print("2. No, search for other options.")
+        if new_location == "end":
+            game_over = True
+        else:
+            current_location = new_location
 
-        choice2 = input("> ")
-        if choice2 == "1":
-            print("You pocket the compass and flashlight.")
-            time.sleep(3)
-            print("You also notice you are halfway naked, with the spare clothes being the only protection from frostbite.")
-            time.sleep(5)
-            print("But eventually, the creep of the cold seaps in. The car is no longer safe.")
-            time.sleep(5)
-            print("and")
-            time.sleep(1)
-            print("...")
-            time.sleep(1)
-        elif choice2 == "2":
-            print("You stay back to consider more options, but it is clear there is nothing left of use inside.")
-            time.sleep(5)
-            print("The cold of the outside creeps in without you knowing...")
-            time.sleep(3)
-            print("and")
-            time.sleep(1)
-            print("...")
-            time.sleep(1)
-    elif choice1 == "2":
-        print("You step out into the freezing cold.")
-        time.sleep(2)
-        print("The dark gray shadow surrounding you, stretching endlessly. Do you...")
-        print("1. Follow the highway.")
-        print("2. Look for tracks in the snow.")
-
-        choice2 = input("> ")
-        if choice2 == "1":
-            print("With only worn socks, you tread the highay. You aren't even clear if you know where your going.")
-            time.sleep(5)
-            print("White specks falls lighly ontop of the highway. Piles of white eventually masking the road before your eyes.")
-            time.sleep(5)
-            print("There no longer is a highway to follow,")
-            time.sleep(3)
-            print("and")
-            time.sleep(1)
-            print("...")
-            time.sleep(1)
-        elif choice2 == "2":
-            print("You see faint tracks of crushed snow travel in a direction you are unsure where it leads.")
-            time.sleep(5)
-            print("Sooner or later, the tracks will no longer be visible")
-            time.sleep(3)
-            print("and")
-            time.sleep(1)
-            print("...")
-            time.sleep(1)
-    elif choice1 == "3":
-        print("You decide to stay in the car and conserve energy, taking measure to seal all visible holes with all you have.")
-        time.sleep(5)
-        print("Fingers start to stiffen, yet the heart remains warm. You know nothing of what cause for the present.")
-        time.sleep(5)
-        print("No memory of the crash, nor a reason for why you are here. Yet, you feel as though you do.")
-        time.sleep(5)
-        print("Chilling fog clouding your mind, despite the sickly hot air filling the room.")
-        time.sleep(3)
-        print("The harsh cold no longer seems dangerous,")
-        time.sleep(2)
-        print("yet")
-        time.sleep(1)
-        print("...")
-        time.sleep(1)
-
-    print("\nThank you for playing the demo!")
-
-adventure_game()
+# Run the game
+cold_eyes_game()
